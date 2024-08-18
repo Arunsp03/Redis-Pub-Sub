@@ -1,17 +1,31 @@
+let requestId="test";
 const submit=async ()=>{
- fetch("http://localhost:3000/produce",{
+const response=await  fetch("http://localhost:3000/produce",{
         method:'POST',
         headers:{
             'Content-Type':"application/json"
         },
         body:JSON.stringify({name:"test"})
-    }).then((data)=>{
-        console.log(data);
+    });
+const status=await response.json();
+requestId=status.requestId;
+let intervalid;
+const checkStatus = async () => {
+    const response = await fetch(`http://localhost:3000/status/${requestId}`);
+    const data = await response.json();
+    console.log("Message status:", data.status);
+
+    if (data.status == "Processed") {
+        console.log("if")
+        clearInterval(intervalid)
+    } else {
         
-    }).catch((ex)=>{
-        console.error(ex);
-    })
-    
-   // console.log("submitted");
-    
+        // Continue polling or handle other states
+    }
+};
+
+// Poll every 5 seconds
+intervalid=setInterval(checkStatus, 2000);     
 }
+
+ 
